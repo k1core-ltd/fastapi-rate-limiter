@@ -50,7 +50,7 @@ class RateLimiter(BaseRateLimiter):
         await self.spend(key)
 
         reset_in_ms = await RateLimiterBackend.reset_in_ms(key)
-        request.state.rate_limit_reset_in = math.ceil(reset_in_ms / 1000)
+        request.state.rate_limit_reset_in_seconds = math.ceil(reset_in_ms / 1000)
         response.headers["X-RateLimit-Limit"] = str(self.times)
 
 
