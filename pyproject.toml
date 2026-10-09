@@ -1,8 +1,13 @@
 [project]
-name = "fastapi-rate-limiter"
+name = "fastapi-rate-limiter-plugin"
 version = "0.1.0"
 description = "Redis backed rate limiting dependency for FastAPI and Starlette"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "bb-soft", email = "noreply@k1core.tech" },
+]
 requires-python = ">=3.12"
 keywords = ["fastapi", "starlette", "rate-limit", "throttling", "redis"]
 classifiers = [
@@ -20,8 +25,11 @@ dependencies = [
 Repository = "https://github.com/k1core-ltd/fastapi-rate-limiter"
 
 [build-system]
-requires = ["uv_build"]
+requires = ["uv_build>=0.9,<0.13"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "fastapi_rate_limiter"
 
 [dependency-groups]
 dev = [
