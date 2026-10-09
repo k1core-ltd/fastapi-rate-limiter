@@ -1,0 +1,51 @@
+name: "Publish to PyPI"
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Work out the next version
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          tag_format: ${version}
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install uv
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+
+      - name: Build the released version
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          sed -i 's/^version = .*/version = "${{ steps.semantic.outputs.new_release_version }}"/' pyproject.toml
+          uv build
+
+      - name: Publish to PyPI
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Tag the release
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          tag_format: ${version}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
